@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Etch-a-Sketch</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+</head>
+
+<body>
+    <div class="ui">
+
+        <button id="gridSize">Change Grid Size</button>
+        <button id="reset">Reset</button>
+        <div class="gridNumber">10 x 10</div>
+        <button id="modeSelect">Mode: Normal</button>
+    </div>
+    
+    <div class="container"></div>
+
+    <script>
+        //set up variable names
+        const container = document.querySelector('.container');
+        const gridSizeBtn = document.querySelector('#gridSize');
+        const resetBtn = document.querySelector('#reset');
+        const gridCounter = document.querySelector('.gridNumber');
+        const modeSelect = document.querySelector('#modeSelect')
+        //set up variable to reset current selected gridsize
+        let latestSquareSize = 10;
+        //c = normal, color, grey
+        let mode = 'normal';
+        
+        //initialize with 10x10 grid
+        setSides(latestSquareSize);
+
+        //reset grid size
+        function setSides(numSquares){
+            //remove current grid first
+            while (container.firstChild){
+                container.removeChild(container.firstChild);
+            }
+
+            //initialize calculation of width percentage
+            let widthPercent;
+            
+            //set up rgb random values
+            let r;
+            let g;
+            let b;
+
+           
+
+
+            //create new grid
+            for (i = 0; i < (numSquares ** 2); i++){
+                //creating new square divs
+                const square = document.createElement('div');
+                //setting border on new square divs
+                square.style.border = '1px solid black';
+                //calculate what % each box must be from squares per side
+                widthPercent = 100/numSquares; 
+                //change square's width value
+                square.style.width = `${widthPercent}%`;
+                //set square's initial color to rgb
+                square.style.background = "white";
+                //add square class for selecting just squares, not container later
+                square.classList.add('square');
+                //append square to container
+                container.appendChild(square);
+            }
+
+            //make squares hoverable
+            //set nodelist of all squares to squares variable
+            const squares = document.querySelectorAll('div.square');
+            //within nodelist, for each square
+            squares.forEach((square) => {
+                //add mouseover event listener
+                square.addEventListener('mouseover', () => {
+                //which makes square black
+                if (mode === 'normal'){
+                    square.style.backgroundColor = 'black';
+                }else if (mode === 'color') {
+                    r = Math.floor(Math.random() * 256);
+                    g = Math.floor(Math.random() * 256);
+                    b = Math.floor(Math.random() * 256);
+
+                    square.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+                }else {
+                        let nextRGB = parseFloat(window.getComputedStyle(square).backgroundColor.split(',')[1]-26);
+                        console.log(nextRGB);    
+                        square.style.backgroundColor = `rgb(${nextRGB}, ${nextRGB}, ${nextRGB})`;
+                    
+                };
+            });
+        });
+
+        }
+
+
+
+
+        //clicking button event
+        gridSizeBtn.addEventListener('click', () =>{
+            let squareSide = prompt('Choose 1 - 100 squares per side');
+            //if user asks for more than 100, automatically set to 100
+            if (squareSide > 100){
+                alert('Setting to 100');
+                squareSide = 100;
+            }else if(squareSide === ''){
+                squareSide = 1;
+            }
+
+            setSides(squareSide);
+            //set latestSquareSize in case of reset
+            latestSquareSize = squareSide;
+            gridCounter.textContent = latestSquareSize + ' x ' + latestSquareSize;
+
+        })
+
+        //reset button, recreates grid using last specified square size
+        resetBtn.addEventListener('click', () =>{
+            setSides(latestSquareSize);
+        })
+
+
+        modeSelect.addEventListener('click', () =>{
+            if (mode === 'normal'){
+                mode = 'color';
+                modeSelect.textContent = 'Mode: Color';
+            } else if (mode === 'color'){
+                mode = 'grey';
+                modeSelect.textContent = "Mode: Grey";
+            }else {
+                mode = 'normal';
+                modeSelect.textContent = "Mode: Normal";
+            }
+        })
+
+    </script>
+</body>
+
+</html>
